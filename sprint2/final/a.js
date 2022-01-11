@@ -17,19 +17,20 @@ tail — индекс, следующий за последним элемент
                                 |        |
                                head     tail
 
-Операции push_back и pop_front осуществляют движение буфера по часовой стрелки. Аналогичны операциям push и pop в простой очереди.
-Операции push_front и pop_back осуществляют противоположное движение буфера.
+Операции pushBack и popFront осуществляют движение буфера по часовой стрелки. Аналогичны операциям push и pop в простой очереди.
+Операции pushFront и popBack осуществляют противоположное движение буфера.
 При этом, при обратном движении, сначала вычисляются индексы head и tail, а затем производятся операции присваивания.
 Также отдельно обрабатывается обратное движение при нулевом индексе. Для того чтобы последний элемент следовал за первым.
 
 -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
-Операции push_back – pop_back и push_front – pop_front являются обратными c точки зрения производимых операций над деком
+Операции pushBack – popBack и pushFront – popFront являются обратными c точки зрения производимых операций над деком
 и его переменными.
 Не уверен, что этого достаточно для доказательства :)
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
 Из-за того, что не нужно снова выделять память, каждая операция выполняется за O(1).
 Длинна дека также вычисляется попутно с добавлением / извлечением.
+Итоговая временная сложность равна O(n), где n - число операций.
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
 Так как размер нашего дека не изменяется динамически, дек с вместимостью n, занимает O(n) памяти.
@@ -51,6 +52,20 @@ _reader.on('line', line => {
 
 process.stdin.on('end', solve);
 
+
+function callDecFunction(instance, command, arg) {
+    switch (command) {
+        case "pop_front":
+            return instance.popFront()
+        case "push_front":
+            return instance.pushFront(arg)
+        case "pop_back":
+            return instance.popBack()
+        case "push_back":
+            return instance.pushBack(arg)
+    }
+}
+
 function solve() {
     const commandsCount = readInt()
     const maxSize = readInt()
@@ -60,17 +75,15 @@ function solve() {
     for (let i = 0; i <= commandsCount - 1; i++) {
         const [fn, arg] = readCommand();
 
-        if (typeof dec[fn] === "function") {
-            try {
-                const result = dec[fn](arg);
-                if (result !== undefined) {
-                    process.stdout.write(`${result}`)
-                    process.stdout.write("\n");
-                }
-            } catch (e) {
-                process.stdout.write(`${e.message}`)
+        try {
+            const result = callDecFunction(dec, fn, arg);
+            if (result !== undefined) {
+                process.stdout.write(`${result}`)
                 process.stdout.write("\n");
             }
+        } catch (e) {
+            process.stdout.write(`${e.message}`)
+            process.stdout.write("\n");
         }
     }
 }
@@ -97,16 +110,16 @@ class Dec {
         this.size = 0
     }
 
-    is_empty() {
+    isEmpty() {
         return this.size === 0;
     }
 
-    is_full() {
+    isFull() {
         return this.size === this.capacity;
     }
 
-    push_back(x) {
-        if (this.is_full()) {
+    pushBack(x) {
+        if (this.isFull()) {
             throw new Error('error');
         }
 
@@ -116,8 +129,8 @@ class Dec {
         this.size++;
     }
 
-    push_front(x) {
-        if (this.is_full()) {
+    pushFront(x) {
+        if (this.isFull()) {
             throw new Error('error');
         }
 
@@ -126,8 +139,8 @@ class Dec {
         this.size++
     }
 
-    pop_back() {
-        if (this.is_empty()) {
+    popBack() {
+        if (this.isEmpty()) {
             throw new Error('error');
         }
 
@@ -139,8 +152,8 @@ class Dec {
         return x;
     }
 
-    pop_front() {
-        if (this.is_empty()) {
+    popFront() {
+        if (this.isEmpty()) {
             throw new Error('error');
         }
 
