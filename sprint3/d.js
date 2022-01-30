@@ -1,43 +1,53 @@
-// const _readline = require('readline');
-//
-// const _reader = _readline.createInterface({
-//     input: process.stdin
-// });
-//
-// const _inputLines = [];
-// let _curLine = 0;
-//
-// _reader.on('line', line => {
-//     _inputLines.push(line);
-// });
-//
-// process.stdin.on('end', solve);
-//
-// function solve() {
-//     const childrenCount = readInt();
-//     const greedArr = readArray();
-//     const cookiesCount = readInt();
-//     const cookiesArr = readArray();
-//
-//     process.stdout.write(`${arr.join('')}`)
-// }
+const _readline = require('readline');
+
+const _reader = _readline.createInterface({
+    input: process.stdin
+});
+
+const _inputLines = [];
+let _curLine = 0;
+
+_reader.on('line', line => {
+    _inputLines.push(line);
+});
+
+process.stdin.on('end', solve);
+
+function solve() {
+    const childrenCount = readInt();
+    const greedArr = readArray();
+    const cookiesCount = readInt();
+    const cookiesArr = readArray();
+
+    const result = countHappy(greedArr, cookiesArr);
+
+
+    process.stdout.write(`${result}`)
+}
 
 function countHappy(children, cookies) {
-    const happy = [];
+    let happy = [];
     let cookieIndex = 0;
     const childrenSorted = children.sort((a, b) => a - b);
     const cookiesSorted = cookies.sort((a, b) => a - b);
 
     for (let childGreed of childrenSorted) {
-        for (let cIndex in cookiesSorted) {
-            if (childGreed <= cookiesSorted[cIndex]) {
-                break
+        while (cookieIndex <= cookiesSorted.length - 1) {
+            if (childGreed <= cookiesSorted[cookieIndex]) {
+                happy.push(childGreed);
+                cookieIndex++;
+                break;
             }
+            cookieIndex++;
+        }
+        if (cookieIndex === cookiesSorted.length) {
+            break;
         }
     }
+
+    return happy.length;
 }
 
-countHappy([1, 2], [2, 1, 3]);
 
 function readInt() {
     const n = Number(_inputLines[_curLine]);
