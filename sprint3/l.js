@@ -19,7 +19,7 @@ function solve() {
     const price = readInt();
 
     const dayX = binarySearch(progress, price,  0, progress.length - 1);
-    const dayXX = binarySearch(progress, price * 2,  0, progress.length - 1);
+    const dayXX = binarySearch(progress, price * 2, dayX , progress.length - 1);
     process.stdout.write(`${dayX} ${dayXX}`)
 }
 
