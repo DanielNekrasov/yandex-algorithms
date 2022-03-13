@@ -1,3 +1,20 @@
+/*
+№ 65071687
+
+-- ПРИНЦИП РАБОТЫ --
+- Номер корзины вычисляется методом деления.
+- В качестве модуля взято наибольшее простое число (100003) с учетом условий задачи (Число хранимых в таблице ключей не превосходит 10^5)
+- Коллизии разрешаются с помощью метода цепочек.
+
+Если n - общее число запросов.
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+O(n), т.к. все операции в среднем совершаются за константное время O(1+α), α - коэф. заполнения.
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+O(n)
+Дополнительная память тратится на поддержание связных списков
+* */
+
 const _readline = require('readline');
 
 const _reader = _readline.createInterface({
@@ -74,13 +91,19 @@ class Hash {
             }
             return "None";
         }
+
         return 'None';
     }
 
     delete(key) {
         const ref = this.items[this._bucket(key)];
         if (ref) {
-            return ref.deleteByKey(key) || "None";
+            const deletedNode = ref.deleteByKey(key);
+            if (deletedNode) {
+                const [k, v] = deletedNode.value;
+                return v;
+            }
+            return "None";
         }
 
         return "None";
@@ -98,36 +121,31 @@ class Node {
 class LinkedList {
     constructor() {
         this.head = null
-        this.tail = null
-        this.size = 0
     }
 
     push(x) {
-        const newTail = new Node(x);
-        if (this.size === 0) {
-            this.head = newTail;
+        if (!this.head) {
+            this.head = new Node(x);
+            return this.head;
         }
 
-        if (this.tail) {
-            newTail.prev = this.tail;
-            this.tail.next = newTail
-        }
+        const newNode = new Node(x);
+        this.head.prev = newNode;
+        newNode.next = this.head
+        this.head = newNode;
 
-        this.tail = newTail;
-        this.size++;
+        return this.head;
     }
 
     getByKey(key) {
         let nextNode = this.head;
-        let i = this.size
-        while (i) {
+        while (nextNode) {
             const [k, v] = nextNode.value;
             if (key === k) {
                 return nextNode;
             }
 
             nextNode = nextNode.next;
-            i = i - 1;
         }
 
         return null;
@@ -137,23 +155,20 @@ class LinkedList {
         const nodeToDelete = this.getByKey(key);
 
         if (nodeToDelete) {
-            if (this.size === 1) {
-                this.head = null;
-                this.tail = null;
-            }
-
             const prev = nodeToDelete.prev;
             const next = nodeToDelete.next;
-            if (prev) {
-                prev.next = next;
+            if (!prev) {
+                this.head = nodeToDelete.next;
+                return nodeToDelete;
             }
+
+            prev.next = next;
+
             if (next) {
                 next.prev = prev;
             }
 
-            const [k, v] = nodeToDelete.value;
-            this.size--;
-            return v;
+            return nodeToDelete;
         }
 
         return null;
