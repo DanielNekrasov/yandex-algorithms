@@ -10,7 +10,7 @@ function solution(root) {
     return isBalanced(root);
 }
 
-function height(root){
+function height(root) {
     if (root === null) {
         return 0
     }
