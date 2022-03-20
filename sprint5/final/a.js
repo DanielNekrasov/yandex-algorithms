@@ -1,3 +1,38 @@
+/**
+ № 66243160
+
+ -- ПРИНЦИП РАБОТЫ --
+ Реализованна функция Array.heapSort. Функция осуществляет пирамидальную сортировку на вызываемом массиве;
+ В качестве аргумента функция принимает компаратор.
+ Общий алгоритм сортировки такой:
+ 1. Создается пустая бинарная куча new Heap(comparator). Куча принимает компаратор в конструкторе.
+ 2. Поочередно вставляем все элементы массивы, сохраняя свойства кучи на основе переданного компаратора (siftUp). – heap.add(item)
+ 3. Извлекаем поочередно наиболее приоритетные элементы (siftDown), удаляя их из кучи. – popMax()
+
+ -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+ Так как при добавлении элементов в кучу поддерживается свойства невозрастающей пирамиды - в корне содержится самый приоритетный элемент.
+
+ -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+ Сложность операций:
+ * Вставка add(key) – O(h), h = log n, т.к. на каждом уровне производится только одно сравнение элемента – O(log n)
+ * Удалении popMax() - O(h), h = log n, т.к. на каждом уровне производится не более 2х сравнение элемента – O(log n)
+
+ Сложность алгоритма:
+ * Создание кучи – O(1)
+ * Добавление n элементов – O(n * log n)
+ * Извлечение n элементов – O(n * log n)
+
+ Итого: O(1) + O(n * log n) + O(n * log n) = O(n * log n)
+
+ -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+ Массивы participants и sorted: O(n)
+ Дополнительная память под хранение кучи: O(n)
+ Функции просеивания siftUp, siftDown требует O(log n) на поддержание стека вызовов.
+
+ Итого: O(n) + O(n) + O(log n) = O(n)
+
+ */
+
 const _readline = require('readline');
 
 const _reader = _readline.createInterface({
@@ -94,28 +129,10 @@ class Heap {
     }
 }
 
-function solve() {
-    let participants = []
-    const num = readInt();
-
-    for (let i = 0; i <= num - 1; i++) {
-        participants.push(readArray());
-    }
-
-    const sorted = heapSort(participants, Participant.comparator);
-
-    for (let i = 0; i <= num - 1; i++) {
-        process.stdout.write(`${sorted[i].login}`)
-        process.stdout.write(`\n`)
-    }
-}
-
-function heapSort(arr, comparator) {
+Array.prototype.heapSort = function (comparator) {
     const heap = new Heap(comparator);
 
-    arr.forEach(i => {
-        heap.add(i);
-    })
+    this.forEach(i => heap.add(i))
 
     let sortedArray = []
 
@@ -124,6 +141,22 @@ function heapSort(arr, comparator) {
     }
 
     return sortedArray;
+}
+
+function solve() {
+    let participants = []
+    const num = readInt();
+
+    for (let i = 0; i <= num - 1; i++) {
+        participants.push(readArray());
+    }
+
+    const sorted = participants.heapSort(Participant.comparator);
+
+    for (let i = 0; i <= num - 1; i++) {
+        process.stdout.write(`${sorted[i].login}`)
+        process.stdout.write(`\n`)
+    }
 }
 
 function readInt() {
